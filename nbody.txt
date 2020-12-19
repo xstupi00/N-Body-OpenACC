@@ -1,0 +1,93 @@
+/**
+ * @file      main.cpp
+ *
+ * @author    Jiri Jaros \n
+ *            Faculty of Information Technology \n
+ *            Brno University of Technology \n
+ *            jarosjir@fit.vutbr.cz
+ *
+ * @brief     PCG Assignment 2
+ *            N-Body simulation in ACC
+ *
+ * @version   2021
+ *
+ * @date      11 November  2020, 11:22 (created) \n
+ * @date      29 November  2020, 11:37 (revised) \n
+ *
+ */
+
+
+
+Krok 1: základní implementace
+===============================================================================
+Velikost dat    	čas [s]
+ 1 * 1024 			  0.754
+ 2 * 1024 			  1.484
+ 3 * 1024 			  2.188
+ 4 * 1024 			  2.850
+ 5 * 1024 			  3.572
+ 6 * 1024 			  4.257
+ 7 * 1024 			  4.962
+ 8 * 1024 			  5.649
+ 9 * 1024 			  6.394
+10 * 1024 			  7.026
+11 * 1024 			  7.705
+12 * 1024 			  8.482
+13 * 1024 			  9.199
+14 * 1024 			 10.200
+15 * 1024 			 11.284
+16 * 1024 			 12.056
+17 * 1024 			 18.676
+18 * 1024 			 19.914
+19 * 1024 			 21.781
+20 * 1024 			 29.197
+21 * 1024 			 31.926
+22 * 1024 			 33.407
+23 * 1024 			 35.011
+24 * 1024 			 36.461
+25 * 1024 			 38.263
+26 * 1024 			 39.566
+27 * 1024 			 41.201
+28 * 1024 			 42.722
+29 * 1024 			 44.384
+30 * 1024 			 45.775
+
+Vyskytla se nějaká anomálie v datech
+Pokud ano, vysvětlete:
+
+
+Krok 2: optimalizace kódu
+===============================================================================
+Došlo ke zrychlení?
+
+Popište dva hlavní důvody:
+
+
+Porovnejte metriky s předchozím krokem:
+
+
+Krok 3: Težiště
+===============================================================================
+Kolik kernelů je nutné použít k výpočtu?
+
+Kolik další paměti jste museli naalokovat?
+
+Jaké je zrychelní vůči sekveční verzi?
+(provedu to smyčkou #pragma acc parallel loop seq)
+Zdůvodněte:
+
+
+
+
+Krok 4: analýza výkonu
+================================================================================
+N        čas CPU [s]    čas GPU [s]    propustnost paměti [MB/s]    výkon [MFLOPS]    zrychlení [-]
+1024     ...            ...            ...                          ...               ...
+2048     ...            ...            ...                          ...               ...
+4096     ...            ...            ...                          ...               ...
+...      ...            ...            ...                          ...               ...
+131072   ...            ...            ...                          ...               ...
+
+Od jakého počtu částic se vyplatí počítat na grafické kartě?
+
+===============================================================================

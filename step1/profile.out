@@ -1,0 +1,82 @@
+==24464== NVPROF is profiling process 24464, command: ./nbody 30720 0.01f 1 0 ../sampledata/30720.h5 step1Output.h5
+N: 30720
+dt: 0.010000
+steps: 1
+==24464== Some kernel(s) will be replayed on device 0 in order to collect all events/metrics.
+Replaying kernel "calculate_gravitation_velocity_31_gpu(Particles const &, Velocities&, int, float)" (done)
+Replaying kernel "calculate_collision_velocity_74_gpu(Particles const &, Velocities&, int, float)" (done)
+Replaying kernel "update_particle_125_gpu(Particles const &, Velocities&, int, float)" (done)
+Time: 50.401000 sl events
+Center of mass on CPU:
+50.0021, 50.1756, 50.1148, 3.83882e+13
+Center of mass on GPU:
+0, 0, 0, 0
+==24464== Profiling application: ./nbody 30720 0.01f 1 0 ../sampledata/30720.h5 step1Output.h5
+==24464== Profiling result:
+==24464== Metric result:
+Invocations                               Metric Name                                    Metric Description         Min         Max         Avg
+Device "Tesla K20m (0)"
+    Kernel: calculate_collision_velocity_74_gpu(Particles const &, Velocities&, int, float)
+          1                        flop_sp_efficiency                          FLOP Efficiency(Peak Single)       8.76%       8.76%       8.76%
+          1                             sm_efficiency                               Multiprocessor Activity      76.86%      76.86%      76.86%
+          1                        alu_fu_utilization                  Arithmetic Function Unit Utilization     Mid (6)     Mid (6)     Mid (6)
+          1                          gld_transactions                              Global Load Transactions    88479360    88479360    88479360
+          1                  l1_cache_global_hit_rate                                    L1 Global Hit Rate       0.00%       0.00%       0.00%
+          1                  shared_load_transactions                              Shared Load Transactions           0           0           0
+          1                            gld_efficiency                         Global Memory Load Efficiency      12.52%      12.52%      12.52%
+          1                  gld_requested_throughput                      Requested Global Load Throughput  7.1868GB/s  7.1868GB/s  7.1868GB/s
+          1                  gst_requested_throughput                     Requested Global Store Throughput  7.6500MB/s  7.6500MB/s  7.6500MB/s
+          1                        achieved_occupancy                                    Achieved Occupancy    0.749387    0.749387    0.749387
+          1                         shared_efficiency                              Shared Memory Efficiency       0.00%       0.00%       0.00%
+          1                            gst_efficiency                        Global Memory Store Efficiency     100.00%     100.00%     100.00%
+          1                            gst_throughput                               Global Store Throughput  7.6500MB/s  7.6500MB/s  7.6500MB/s
+          1                            gld_throughput                                Global Load Throughput  57.390GB/s  57.390GB/s  57.390GB/s
+          1                             flop_count_sp           Floating Point Operations(Single Precision)  1.4156e+10  1.4156e+10  1.4156e+10
+          1                         flop_count_sp_add       Floating Point Operations(Single Precision Add)  3774935040  3774935040  3774935040
+          1                         flop_count_sp_mul        Floating Point Operation(Single Precision Mul)  2831124480  2831124480  2831124480
+          1                         flop_count_sp_fma       Floating Point Operations(Single Precision FMA)  3774812160  3774812160  3774812160
+          1                             flop_count_dp           Floating Point Operations(Double Precision)           0           0           0
+          1                     flop_count_sp_special   Floating Point Operations(Single Precision Special)   943687680   943687680   943687680
+    Kernel: update_particle_125_gpu(Particles const &, Velocities&, int, float)
+          1                        flop_sp_efficiency                          FLOP Efficiency(Peak Single)       0.42%       0.42%       0.42%
+          1                             sm_efficiency                               Multiprocessor Activity      69.94%      69.94%      69.94%
+          1                        alu_fu_utilization                  Arithmetic Function Unit Utilization     Low (2)     Low (2)     Low (2)
+          1                          gld_transactions                              Global Load Transactions       11520       11520       11520
+          1                  l1_cache_global_hit_rate                                    L1 Global Hit Rate       0.00%       0.00%       0.00%
+          1                  shared_load_transactions                              Shared Load Transactions           0           0           0
+          1                            gld_efficiency                         Global Memory Load Efficiency     100.00%     100.00%     100.00%
+          1                  gld_requested_throughput                      Requested Global Load Throughput  88.122GB/s  88.122GB/s  88.122GB/s
+          1                  gst_requested_throughput                     Requested Global Store Throughput  44.061GB/s  44.061GB/s  44.061GB/s
+          1                        achieved_occupancy                                    Achieved Occupancy    0.673541    0.673541    0.673541
+          1                         shared_efficiency                              Shared Memory Efficiency       0.00%       0.00%       0.00%
+          1                            gst_efficiency                        Global Memory Store Efficiency     100.00%     100.00%     100.00%
+          1                            gst_throughput                               Global Store Throughput  44.061GB/s  44.061GB/s  44.061GB/s
+          1                            gld_throughput                                Global Load Throughput  88.122GB/s  88.122GB/s  88.122GB/s
+          1                             flop_count_sp           Floating Point Operations(Single Precision)      276480      276480      276480
+          1                         flop_count_sp_add       Floating Point Operations(Single Precision Add)       92160       92160       92160
+          1                         flop_count_sp_mul        Floating Point Operation(Single Precision Mul)           0           0           0
+          1                         flop_count_sp_fma       Floating Point Operations(Single Precision FMA)       92160       92160       92160
+          1                             flop_count_dp           Floating Point Operations(Double Precision)           0           0           0
+          1                     flop_count_sp_special   Floating Point Operations(Single Precision Special)           0           0           0
+    Kernel: calculate_gravitation_velocity_31_gpu(Particles const &, Velocities&, int, float)
+          1                        flop_sp_efficiency                          FLOP Efficiency(Peak Single)      15.84%      15.84%      15.84%
+          1                             sm_efficiency                               Multiprocessor Activity      98.29%      98.29%      98.29%
+          1                        alu_fu_utilization                  Arithmetic Function Unit Utilization     Mid (6)     Mid (6)     Mid (6)
+          1                          gld_transactions                              Global Load Transactions   117967680   117967680   117967680
+          1                  l1_cache_global_hit_rate                                    L1 Global Hit Rate       0.00%       0.00%       0.00%
+          1                  shared_load_transactions                              Shared Load Transactions           0           0           0
+          1                            gld_efficiency                         Global Memory Load Efficiency      12.51%      12.51%      12.51%
+          1                  gld_requested_throughput                      Requested Global Load Throughput  9.6305GB/s  9.6305GB/s  9.6305GB/s
+          1                  gst_requested_throughput                     Requested Global Store Throughput  7.6983MB/s  7.6983MB/s  7.6983MB/s
+          1                        achieved_occupancy                                    Achieved Occupancy    0.582030    0.582030    0.582030
+          1                         shared_efficiency                              Shared Memory Efficiency       0.00%       0.00%       0.00%
+          1                            gst_efficiency                        Global Memory Store Efficiency     100.00%     100.00%     100.00%
+          1                            gst_throughput                               Global Store Throughput  7.6983MB/s  7.6983MB/s  7.6983MB/s
+          1                            gld_throughput                                Global Load Throughput  76.991GB/s  76.991GB/s  76.991GB/s
+          1                             flop_count_sp           Floating Point Operations(Single Precision)  2.5480e+10  2.5480e+10  2.5480e+10
+          1                         flop_count_sp_add       Floating Point Operations(Single Precision Add)  6605998080  6605998080  6605998080
+          1                         flop_count_sp_mul        Floating Point Operation(Single Precision Mul)  9437184000  9437184000  9437184000
+          1                         flop_count_sp_fma       Floating Point Operations(Single Precision FMA)  4718530560  4718530560  4718530560
+          1                             flop_count_dp           Floating Point Operations(Double Precision)           0           0           0
+          1                     flop_count_sp_special   Floating Point Operations(Single Precision Special)  1887406080  1887406080  1887406080
+(py-test-env) [dd-20-28-245@cn182.anselm step1]$
