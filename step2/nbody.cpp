@@ -27,10 +27,10 @@
 
 /// Compute gravitation and collision velocity, and subsequently update particle positions
 void calculate_velocity(
-  Particles& p_in, const int N, const float dt
+  const Particles& p_in, Particles& p_out, const int N, const float dt
 ) {
 
-#pragma acc parallel loop present(p_in) gang worker vector
+#pragma acc parallel loop present(p_in, p_out) gang
   for (unsigned int i = 0; i < N; i++)
   {
 
@@ -39,7 +39,7 @@ void calculate_velocity(
     float tmp_vel_y = 0.0f;
     float tmp_vel_z = 0.0f;
 
-//      #pragma acc loop reduction(+:tmp_vel_x, tmp_vel_y, tmp_vel_z)
+#pragma acc loop reduction(+:tmp_vel_x, tmp_vel_y, tmp_vel_z) worker vector
     /// The iterations over all particles to compute the gravitation velocity to them
     for (int j = 0; j < N; j++) {
 
@@ -78,14 +78,14 @@ void calculate_velocity(
     }
 
     /// Updates the velocity of particles with respect to the computed gravitation and collision velocity
-    p_in.vel_x[i] += tmp_vel_x;
-    p_in.vel_y[i] += tmp_vel_y;
-    p_in.vel_z[i] += tmp_vel_z;
+    p_out.vel_x[i] = p_in.vel_x[i] + tmp_vel_x;
+    p_out.vel_y[i] = p_in.vel_y[i] + tmp_vel_y;
+    p_out.vel_z[i] = p_in.vel_z[i] + tmp_vel_z;
 
     /// Updates the positions of particles with respect to the updated velocity
-    p_in.pos_x[i] += p_in.vel_x[i] * dt;
-    p_in.pos_y[i] += p_in.vel_y[i] * dt;
-    p_in.pos_z[i] += p_in.vel_z[i] * dt;
+    p_out.pos_x[i] = p_in.pos_x[i] + (p_in.vel_x[i] + tmp_vel_x) * dt;
+    p_out.pos_y[i] = p_in.pos_y[i] + (p_in.vel_y[i] + tmp_vel_y) * dt;
+    p_out.pos_z[i] = p_in.pos_z[i] + (p_in.vel_z[i] + tmp_vel_z) * dt;
   }
 
 }

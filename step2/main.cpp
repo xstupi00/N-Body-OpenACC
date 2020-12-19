@@ -18,6 +18,7 @@
 
 #include <chrono>
 #include <cstdio>
+#include <cstring>
 #include <cmath>
 
 #include "nbody.h"
@@ -55,7 +56,8 @@ int main(int argc, char **argv)
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // 1.  Memory allocation on CPU
-  Particles particles(N);
+  Particles particles_in(N);
+  Particles particles_out(N);
 
   // 2. Create memory descriptor
   /*
@@ -66,15 +68,15 @@ int main(int argc, char **argv)
    *                                    in floats, not bytes        not bytes
   */
   MemDesc md(
-    particles.pos_x,                1,                          0,            // Position in X
-    particles.pos_y,                1,                          0,            // Position in Y
-    particles.pos_z,                1,                          0,            // Position in Z
-    particles.vel_x,                1,                          0,            // Velocity in X
-    particles.vel_y,                1,                          0,            // Velocity in Y
-    particles.vel_z,                1,                          0,            // Velocity in Z
-    particles.weights,              1,                          0,            // Weights
-    N,                                                                        // Number of particles
-    recordsNum                                                                // Number of records in output file
+    particles_in.pos_x,                1,                          0,            // Position in X
+    particles_in.pos_y,                1,                          0,            // Position in Y
+    particles_in.pos_z,                1,                          0,            // Position in Z
+    particles_in.vel_x,                1,                          0,            // Velocity in X
+    particles_in.vel_y,                1,                          0,            // Velocity in Y
+    particles_in.vel_z,                1,                          0,            // Velocity in Z
+    particles_in.weights,              1,                          0,            // Weights
+    N,                                                                           // Number of particles
+    recordsNum                                                                   // Number of records in output file
   );
 
   H5Helper h5Helper(argv[5], argv[6], md);
@@ -91,7 +93,10 @@ int main(int argc, char **argv)
   }
 
   // 3. Copy data to GPU
-  particles.copyToGPU();
+  particles_in.copyToGPU();
+
+  memcpy(particles_out.weights, particles_in.weights, N * sizeof(float));
+  #pragma acc update device(particles_out.weights[N]) // Copy weights: CPU => GPU.
 
   // Start the time
   auto startTime = std::chrono::high_resolution_clock::now();
@@ -99,7 +104,11 @@ int main(int argc, char **argv)
   // 4. Run the loop - calculate new Particle positions.
   for (int s = 0; s < steps; s++)
   {
-    calculate_velocity(particles, N, dt);
+    calculate_velocity(
+      (s & 1ul) ? particles_out : particles_in,
+      (s & 1ul) ? particles_in : particles_out,
+      N, dt
+    );
 
     /// In step 4 - fill in the code to store Particle snapshots.
     if (writeFreq > 0 && (s % writeFreq == 0))
@@ -121,7 +130,7 @@ int main(int argc, char **argv)
   printf("Time: %f s\n", time / 1000);
 
   // 5. Copy data from GPU back to CPU.
-  particles.copyToCPU();
+  (steps & 1) ? particles_out.copyToCPU() : particles_in.copyToCPU();
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -78,11 +78,11 @@ struct Particles
   float *weights; // Weights
 
   /// Default constructor is not allowed - the particles number must be known in advance
-//  Particles() = delete;
+  Particles() = delete;
   /// Copy constructor is not allowed - performance loss due to data copies.
-//  Particles(const Particles& stc) = delete;
+  Particles(const Particles& stc) = delete;
   /// Assignment operator is not allowed - performance loss due to data copies.
-//  Particles& operator=(const Particles& stc) = delete;
+  Particles& operator=(const Particles& stc) = delete;
 
   /**
   * Constructor.
@@ -179,7 +179,7 @@ struct Particles
  * @param [in]  dt       - Time step size
  */
 void calculate_velocity(
-  Particles& p_in, const int N, const float dt
+  const Particles& p_in, Particles& p_out, const int N, const float dt
 );
 
 
