@@ -7,8 +7,8 @@ STEPS=500
 INPUT_DIR="inputs"
 OUTPUT_DIR="outputs"
 GEN_BIN="./commons/gen"
-NBODY_BIN="./step1/nbody"
-RESULT_FILE="step1/times.txt"
+NBODY_BIN="./step2/nbody"
+RESULT_FILE="step2/times.txt"
 
 # Check whether exists OUTPUT FILE to store the results
 if [ ! -d "$RESULT_FILE" ]; then
