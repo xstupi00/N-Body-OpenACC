@@ -64,18 +64,21 @@
       <change beforePath="$PROJECT_DIR$/outputs/28672.h5" beforeDir="false" afterPath="$PROJECT_DIR$/outputs/28672.h5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/outputs/29696.h5" beforeDir="false" afterPath="$PROJECT_DIR$/outputs/29696.h5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/outputs/3072.h5" beforeDir="false" afterPath="$PROJECT_DIR$/outputs/3072.h5" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/outputs/30720.h5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outputs/30720.h5" beforeDir="false" afterPath="$PROJECT_DIR$/outputs/30720.h5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/outputs/4096.h5" beforeDir="false" afterPath="$PROJECT_DIR$/outputs/4096.h5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/outputs/5120.h5" beforeDir="false" afterPath="$PROJECT_DIR$/outputs/5120.h5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/outputs/6144.h5" beforeDir="false" afterPath="$PROJECT_DIR$/outputs/6144.h5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/outputs/7168.h5" beforeDir="false" afterPath="$PROJECT_DIR$/outputs/7168.h5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/outputs/8192.h5" beforeDir="false" afterPath="$PROJECT_DIR$/outputs/8192.h5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/outputs/9216.h5" beforeDir="false" afterPath="$PROJECT_DIR$/outputs/9216.h5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run_time.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run_time.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/step2/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/step2/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sampledata/sampleOutput.h5" beforeDir="false" afterPath="$PROJECT_DIR$/sampledata/sampleOutput.h5" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/step1/nbody.h" beforeDir="false" afterPath="$PROJECT_DIR$/step1/nbody.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/step2/nbody.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/step2/nbody.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/step2/nbody.h" beforeDir="false" afterPath="$PROJECT_DIR$/step2/nbody.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/step2/step1Output.h5" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/step3/nbody.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/step3/nbody.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/step3/nbody.h" beforeDir="false" afterPath="$PROJECT_DIR$/step3/nbody.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test-outputs/circle.h5" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test-outputs/circle.h5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test-outputs/thompson.h5" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test-outputs/thompson.h5" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test-outputs/two-lines-one.h5" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test-outputs/two-lines-one.h5" afterDir="false" />
@@ -129,7 +132,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1608370027299</updated>
-      <workItem from="1608370031471" duration="32126000" />
+      <workItem from="1608370031471" duration="89813000" />
     </task>
     <servers />
   </component>
@@ -141,9 +144,21 @@
       <screen x="0" y="27" width="1920" height="987" />
     </state>
     <state x="554" y="181" width="802" height="686" key="#C/C++/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608372270923" />
+    <state x="663" y="324" width="583" height="399" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1608496307462">
+      <screen x="0" y="27" width="1920" height="987" />
+    </state>
+    <state x="663" y="324" width="583" height="399" key="#com.intellij.fileTypes.FileTypeChooser/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608496307462" />
+    <state x="742" y="277" width="426" height="493" key="FileChooserDialogImpl" timestamp="1608446060580">
+      <screen x="0" y="27" width="1920" height="987" />
+    </state>
+    <state x="742" y="277" width="426" height="493" key="FileChooserDialogImpl/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608446060580" />
     <state x="614" y="347" key="com.intellij.ide.util.TipDialog" timestamp="1608370031500">
       <screen x="0" y="27" width="1920" height="987" />
     </state>
     <state x="614" y="347" key="com.intellij.ide.util.TipDialog/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608370031500" />
+    <state x="623" y="242" width="672" height="678" key="search.everywhere.popup" timestamp="1608472466170">
+      <screen x="0" y="27" width="1920" height="987" />
+    </state>
+    <state x="623" y="242" width="672" height="678" key="search.everywhere.popup/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608472466170" />
   </component>
 </project>

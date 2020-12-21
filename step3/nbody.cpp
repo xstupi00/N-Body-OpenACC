@@ -41,7 +41,7 @@ void calculate_velocity(
 
 #pragma acc loop reduction(+:tmp_vel_x, tmp_vel_y, tmp_vel_z) worker vector
     /// The iterations over all particles to compute the gravitation velocity to them
-    for (int j = 0; j < N; j++) {
+    for (unsigned int j = 0; j < N; j++) {
 
       /// Instruction Level Parallelism
       float s = -G * dt * p_in.weights[j];

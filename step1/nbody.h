@@ -42,16 +42,6 @@ struct float4
   float w;
 };
 
-/**
- * @struct float3
- * Structure that mimics CUDA float3
- */
-struct float3
-{
-    float x;
-    float y;
-    float z;
-};
 
 /// Define sqrtf from CUDA libm library
 #pragma acc routine(sqrtf) seq
@@ -198,11 +188,6 @@ struct Velocities
   */
   Velocities(size_t n) : n(n)
   {
-    /// Construct the velocities on the CPU.
-    x = new float[n];   // Allocates velocities X.
-    y = new float[n];   // Allocates velocities Y.
-    z = new float[n];   // Allocates velocities Z.
-
     /// Construct the velocities on the GPU.
     /// Copy the struct into device memory.
     #pragma acc enter data copyin(this)
@@ -225,30 +210,7 @@ struct Velocities
     #pragma acc exit data delete(z[n])   // Deallocate velocities Z.
     /// Then deallocate the whole struct.
     #pragma acc exit data delete(this)
-
-    /// Destruct the velocities on the CPU.
-    delete [] x;   // Deallocate velocities X.
-    delete [] y;   // Deallocate velocities Y.
-    delete [] z;   // Deallocate velocities Z.
   } /// Destructor
-  ///------------------------------------------------------------------------------------------------------------------
-
-  /// Copy actual CPU velocities data to GPU.
-  void copyToGPU()
-  {
-    #pragma acc update device(x[n])   // Copy velocities X: CPU => GPU.
-    #pragma acc update device(y[n])   // Copy velocities Y: CPU => GPU.
-    #pragma acc update device(z[n])   // Copy velocities Z: CPU => GPU.
-  }/// copyToGPU
-  ///------------------------------------------------------------------------------------------------------------------
-
-  /// Copy actual velocities data from GPU to CPU.
-  void copyToCPU()
-  {
-    #pragma acc update host(x[n])   // Copy velocities X: GPU => CPU.
-    #pragma acc update host(y[n])   // Copy velocities Y: GPU => CPU.
-    #pragma acc update host(z[n])   // Copy velocities Z: GPU => CPU.
-  }/// copyToCPU
   ///------------------------------------------------------------------------------------------------------------------
 
 };/// end of Velocities

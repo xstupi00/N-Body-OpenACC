@@ -42,16 +42,6 @@ struct float4
   float w;
 };
 
-/**
- * @struct float3
- * Structure that mimics CUDA float3
- */
-struct float3
-{
-    float x;
-    float y;
-    float z;
-};
 
 /// Define sqrtf from CUDA libm library
 #pragma acc routine(sqrtf) seq
