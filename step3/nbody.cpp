@@ -101,6 +101,7 @@ float4 centerOfMassGPU(const Particles &p, const int N) {
 
   /// Reduction across Multi-level Thread Parallelism in the Same Loop
   #pragma acc parallel loop present(p) reduction(+:sum_x, sum_y, sum_z, sum_w) gang worker vector
+//  #pragma acc parallel loop seq present(p)
   for (unsigned int i = 0; i < N; i++) {
     sum_x += (p.pos_x[i] * p.weights[i]);   // Add the weighting position X of the current particle.
     sum_y += (p.pos_y[i] * p.weights[i]);   // Add the weighting position Y of the current particle.

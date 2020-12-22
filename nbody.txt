@@ -1,7 +1,7 @@
 /**
  * @file      main.cpp
  *
- * @author    Jiri Jaros \n
+ * @author    Simon Stupinsky; xstupi00 \n
  *            Faculty of Information Technology \n
  *            Brno University of Technology \n
  *            jarosjir@fit.vutbr.cz
@@ -12,7 +12,7 @@
  * @version   2021
  *
  * @date      11 November  2020, 11:22 (created) \n
- * @date      29 November  2020, 11:37 (revised) \n
+ * @date      22 December  2020, 18:32 (revised) \n
  *
  */
 
@@ -21,73 +21,247 @@
 Krok 1: základní implementace
 ===============================================================================
 Velikost dat    	čas [s]
- 1 * 1024 			  0.754
- 2 * 1024 			  1.484
- 3 * 1024 			  2.188
- 4 * 1024 			  2.850
- 5 * 1024 			  3.572
- 6 * 1024 			  4.257
- 7 * 1024 			  4.962
- 8 * 1024 			  5.649
- 9 * 1024 			  6.394
-10 * 1024 			  7.026
-11 * 1024 			  7.705
-12 * 1024 			  8.482
-13 * 1024 			  9.199
-14 * 1024 			 10.200
-15 * 1024 			 11.284
-16 * 1024 			 12.056
-17 * 1024 			 18.676
-18 * 1024 			 19.914
+ 1 * 1024 			 0.755
+ 2 * 1024 			 1.486
+ 3 * 1024 			 2.195
+ 4 * 1024 			 2.851
+ 5 * 1024 			 3.576
+ 6 * 1024 			 4.261
+ 7 * 1024 			 4.961
+ 8 * 1024 			 5.652
+ 9 * 1024 			 6.452
+10 * 1024 			 7.017
+11 * 1024 			 7.707
+12 * 1024 			 8.480
+13 * 1024 			 9.199
+14 * 1024 			 10.204
+15 * 1024 			 11.288
+16 * 1024 			 12.049
+17 * 1024 			 18.698
+18 * 1024 			 19.880
 19 * 1024 			 21.781
-20 * 1024 			 29.197
-21 * 1024 			 31.926
-22 * 1024 			 33.407
-23 * 1024 			 35.011
-24 * 1024 			 36.461
-25 * 1024 			 38.263
-26 * 1024 			 39.566
-27 * 1024 			 41.201
-28 * 1024 			 42.722
-29 * 1024 			 44.384
-30 * 1024 			 45.775
+20 * 1024 			 29.158
+21 * 1024 			 31.921
+22 * 1024 			 33.399
+23 * 1024 			 34.977
+24 * 1024 			 36.496
+25 * 1024 			 38.254
+26 * 1024 			 39.582
+27 * 1024 			 41.175
+28 * 1024 			 42.624
+29 * 1024 			 44.370
+30 * 1024 			 45.747
 
 Vyskytla se nějaká anomálie v datech
 Pokud ano, vysvětlete:
+
+First anomaly:
+----------------
+16 * 1024: 12.049 sec => 17 * 1024: 18.698 sec
+
+The kernel calculate_gravitation_velocity_31_gpu uses 48 registers for each thread - 6144 registers for each block.
+Device "Tesla K20m" provides up to 65536 registers for each block. Because the kernel uses 6144 registers for
+each block each SM is limited simultaneously executing 10 blocks (40 warps). Each block includes (32, 4) threads
+per block, therefore each block processes 128 particles at once. Since "Tesla K20m" provides up to 13 SM, the
+maximal number of processed particles within this kernel at once is limited by 16 * 1024:
+
+Block Size: [32, 4, 1]
+
+13 SM Multiprocessors, 10 blocks per SM Multiprocessor, 128 threads per block
+13 SM Multiprocessors * 10 blocks per SM Multiprocessor = 130 executed blocks
+130 executed blocks * 128 threads per block = 16 * 1024 < 16640 <  17 * 1024
+
+Second anomaly:
+----------------
+19 * 1024: 21.781 sec => 20 * 1024: 29.158 sec
+
+The kernel calculate_collision_velocity_74_gpu uses 37 registers for each thread - 4736 registers for each block.
+Device "Tesla K20m" provides up to 65536 registers for each block. Because the kernel uses 4736 registers for
+each block each SM is limited simultaneously executing 12 blocks (48 warps). Each block includes (32, 4) threads
+per block, therefore each block processes 128 particles at once. Since "Tesla K20m" provides up to 13 SM, the
+maximal number of processed particles within this kernel at once is limited by 19 * 1024:
+
+Block Size: [32, 4, 1]
+
+13 SM Multiprocessors, 45 blocks per SM Multiprocessor, 128 threads per block
+13 SM Multiprocessors * 12 blocks per SM Multiprocessor = 156 executed blocks
+156 executed blocks * 128 threads per block = 19 * 1024 < 19968 <  20 * 1024
+
+Summary:
+----------------
+In view of these facts, we can see the performance anomalies, caused by either one or the other kernel, at
+a larger number of input particles such as these limits. In such cases, "Tesla K20m" is not able to process all
+the particles at once, and some SM processor has to do the job repeatedly. Simply put, in such cases, the
+particles are processed in two or more rounds, while below the limit, one round was enough.
 
 
 Krok 2: optimalizace kódu
 ===============================================================================
 Došlo ke zrychlení?
 
+Yes, the performance acceleration was recorded. The results for the specific sizes of input are available
+in the file times.txt for each step. On average, an acceleration of about 35% in comparison to the previous
+step (Step1), was recorded.
+
 Popište dva hlavní důvody:
+
+The greatest impact on the increase in performance of the computation has a decrease in the number of
+global load transactions. In the Step1, were performed the duplicated accesses to the global memory during
+the loadings of the required data to the individual computations in the relevant kernels. Primarily, the
+kernel calculate_collision_velocity_74_gpu repeatedly loads the data from global memory, which also the
+kernel calculate_gravitation_velocity_31_gpu loads before it. Therefore, significantly reducing the number
+of accesses to global memory significantly affects the overall performance of the computation.
+
+The second greatest impact on the increase in the performance of the computation has a decrease in the
+number of FP operations. The elimination of the duplicate calculations, primarily in the kernel
+calculate_collision_velocity_74_gpu, ensured a significant reduction of FP operations number in the whole
+program. The optimization of expressions for the calculation of relationships between particles also
+contributed to the reduction of the number of FP operations.
+
+The less significant effect on performance improvement has a decrease in the overhead connected with the
+invoking the individual kernels. In the first step (Step1) were invoking gradually three kernels and it
+required certainly overheads. Now, we invoke only one computation kernel, which ensures the whole computation
+logic and therefore most of such overheads have been eliminated.
 
 
 Porovnejte metriky s předchozím krokem:
+
+Profiling command: ./nbody 30720 0.01f 1 0 ../sampledata/30720.h5 step2Output.h5
+
+The individual metrics are almost the same as in the Step1 at the kernel calculate_gravitation_velocity_31_gpu.
+This is due to the fact, that this kernel included the majority part of the computation already in Step1. On
+the other hand, the kernel calculate_collision_velocity_74_gpu included only the minor part of whole computation
+and its major parts were unnecessary duplicate calculations and repeatedly loadings from global memory.
+Now, in this step, the kernel calculate_velocity_34_gpu is enriched only by the calculation of the collision
+velocities, which consists of already calculated partial components, and the final calculation of the new
+velocities and positions from kernel update_particles.
+
+Global Load Transactions (gld_transactions): 206 458 560 (Step1) - 117 976 320 (Step2) => 88 482 240
+    -> How we said above, by the combination of three kernels into only one kernel, we reduce the number
+       of loading transactions from global memory. The main reason for this statement is this, that
+       kernel calculate_collision_velocity_74_gpu performed the repeated loadings from global memory
+       in the Step1 (particles loading). In this step (Step2), we also avoided the temporary velocity
+       vector, which was also accessed within the global memory.
+    -> We can observe, that the number of global load transactions in this step is almost equal to the
+       number of such transactions in the previous step in the kernel calculate_gravitation_velocity_31_gpu:
+        -- Step1 (calculate_gravitation_velocity_31_gpu) 117 967 680 => Step1 (calculate_velocity) 117 976 320
+    -> The overall number of these transactions was decreased about the number, which was performed within
+       the kernels calculate_collision_velocity_74_gpu and update_particle_124_gpu in the Step1, which
+       confirms our claims:
+        -- Step1 (calculate_collision_velocity_74_gpu) + Step1 (update_particle_124_gpu)
+           88 479 360 + 11 520 = 88 490 880 => Step2 - Step1 difference 88 482 240
+       We see that both these kernels performed really unnecessary repetitive transactions from global memory.
+
+Floating Point Operations Single Precision (flop_count_sp): 3.9636e+10 (Step1) - 2.5481e+10 (Step2) => 1.4155e+10
+    -> We can see, that the combination of the individual kernels into one kernel caused the reduction of the
+       operations number. This is because, in the Step1, some calculations have to be repeated due to the
+       division of the gravitation and collision velocities into several kernels, for example:
+        - the computation of the distance between the relevant particles
+        - the computation inverse distance between particles and their distances
+        - the addition of the partially computed velocities to the auxiliary velocities vector
+       We note, that the number of reduced operations is almost equal to the number of operations performed in
+       the Step1 by the kernel calculate_collision_velocity_74_gpu (1.4156e+10). In this kernel was performed
+       the most of the duplicate calculations, which were already computed in the kernel
+       calculate_gravitation_velocity_31_gpu before. This fact also confirms the number of operations, which is
+       almost identical in this step (2.5481e+10) as the number of operations in the previous step performed by
+       kernel calculate_gravitation_velocity_31_gpu (2.5480e+10). The slight difference is due to the addition
+       of operations from kernel update_particle_124_gpu (276480).
+
+Floating Point Operations(Single Precision Special) (flop_count_sp_special):
+    -> 2 831 093 760 (Step1) - 1 887 406 080 (Step2) = 943 687 680
+    -> Step1 flop_count_sp_special in kernel calculate_collision_velocity_74_gpu = 943 687 680
+    -> The reduction of these operations occurred for the same reasons as we mentioned above.
 
 
 Krok 3: Težiště
 ===============================================================================
 Kolik kernelů je nutné použít k výpočtu?
 
+Two kernels are used for the computation of the Center of Mass.
+
+We implemented the reduction across multi-level parallelism in the same loop. Each thread does its own
+partial reduction, and finally, launch another kernel to do the reduction for all values in the buffer.
+Whether the buffer is stored in global memory or shared memory depends on whether the reduction happens
+in gang parallelism. As long as gang parallelism is involved, the buffer must be in global memory.
+
+With respect to the implementation, the compiler creates a buffer with the size equal to the number of all
+threads that needs to do the reduction (e.g., workers * vector) and the buffer is stored in the global or
+shared memory. Each thread writes its own partial reduction result into this buffer and continues the
+reduction operation in the memory.
+
+Within our implementation, where we used the multi-level parallelism with scenario gang & worker & vector.
+A temporary buffer is created and all threads performing reduction operation write their own private reduction
+into this buffer based on the unique id of each thread. This buffer is allocated in the global memory since
+the reduction spans across gangs and all gangs do not have the mechanism to synchronize. Another kernel that
+takes this temporary buffer as input is launched and this kernel performs the vector reduction to generate the
+final reduction value.
+
 Kolik další paměti jste museli naalokovat?
+
+There was no new allocation on the GPU or CPU directly. However, at parallelization of the reduction loop
+within the kernel centerOfMassGPU_100_gpu is generated the implicit clause copy(sum_w,sum_x,sum_z,sum_y).
+This clause allocates memory on GPU and copies data from the host to GPU when entering region and copies
+data to the host when exiting the region. These four float variables are initialised to 0.0 and they serve
+as the reduction variables within itself reduction loop. At the end of the reduction kernel, they are
+returned to the caller and subsequently processed on CPU.
 
 Jaké je zrychelní vůči sekveční verzi?
 (provedu to smyčkou #pragma acc parallel loop seq)
 Zdůvodněte:
 
+We measured the individual run-times of the invoked kernels using the nvvp profiler. We translated the
+binary program with the relevant specific pragmas and subsequently run the listed command, and then
+read individually run-times.
 
+Running command: ./nbody 30720 0.01f 1 0 ../sampledata/30720.h5 step3Output.h5
 
+#pragma acc parallel loop present(p) reduction(+:sum_x, sum_y, sum_z, sum_w) gang worker vector
+    Duration of kernel centerOfMassGPU_100_gpu: 17.376 microseconds; importance 0.00%
+    Duration of kernel centerOfMassGPU_100_gpu__red: 6.304 microseconds; importance 0.00%
 
-Krok 4: analýza výkonu
+#pragma acc parallel loop seq present(p)
+    Duration of kernel centerOfMassGPU_100_gpu: 40.53762 miliseconds; 8.90% importance
+
+Acceleration: 40.53762 ms / (17.376 us + 6.304 us) = 1711.892736
+
+Krok 4: analýza výkonu (steps=500, dt=0.01)
 ================================================================================
-N        čas CPU [s]    čas GPU [s]    propustnost paměti [MB/s]    výkon [MFLOPS]    zrychlení [-]
-1024     ...            ...            ...                          ...               ...
-2048     ...            ...            ...                          ...               ...
-4096     ...            ...            ...                          ...               ...
-...      ...            ...            ...                          ...               ...
-131072   ...            ...            ...                          ...               ...
+N           čas CPU [s]     čas GPU CUDA [s]    čas GPU OpenACC [s]     propustnost paměti [MB/s]   výkon [MFLOPS]    zrychlení [-]
+128                0.816               0.086              0.160                   1122.1218               1492.4125           5.100
+256                2.339               0.123              0.213                   2103.3204               4472.1877          10.981
+512                4.239               0.217              0.324                   4167.8210              11745.5679          13.083
+1024               4.928               0.402              0.538                   8121.8787              28277.2713           9.159
+2048              15.109               0.777              0.974                  16101.5855              62458.8459          15.512
+-------------------------------------------------------------------------------------------------------------------------------------
+4096              57.088               1.535              1.782                  33132.3667             136534.5207          32.036
+8192             216.300               3.053              3.388                  67045.1459             287233.8146          63.843
+16384            861.109               6.639             12.863                  85277.8281             302608.5190          66.944
+32768          ~3542.846              29.238             37.678                 111503.6201             413222.7206          94.029
+65536         ~14879.956              117.196           126.749                 141323.8876             487481.6631         117.397
+131072        ~63983.815              411.074           501.876                 159721.6275             496359.1024         127.489
+
 
 Od jakého počtu částic se vyplatí počítat na grafické kartě?
+    -> We can observe, that at the size of the input smaller or equal than N=2048 is more suitable run the
+       computation at the CPU as multi-core simulation. All such computations take last quite a short time
+       and moreover, they are not significantly slower than the corresponding GPU version.
+    -> Run the computation on GPU makes sense with the input size greater or equal than N=4096. From this
+       size of the input, the computation on CPU takes a very long time and especially, it is much slower
+       than the corresponding computation on GPU.
 
 ===============================================================================
+
+script get_metrics.sh
+
+We implemented the semi-automatic script to collect the run-times, memory throughput and performance of
+the implemented OpenACC program. Firstly, it generates the required files according to the selected input
+sizes. Subsequently, it runs the program over the individual generated input files and parse the run-time
+from the program output. These collected run-times are stored to the buffer, and they are used when
+computing the performance of the program in MFLOPS.
+
+In the next phase, the script runs the profiling command with the relevant metrics to collect memory
+throughput. From the results of the individual kernels are obtained the required values and subsequently
+is computed the result value of memory throughput for the specific run. In the last phase, the script
+runs the profiling command with the specific metrics to collect data from which will be computed the
+performance of the program in MFLOPS units. The result value is computed according to the relevant
+formula after the parsing the individual metrics from the profiling output.

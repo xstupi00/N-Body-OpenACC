@@ -79,4 +79,4 @@ profile:
 		--metrics gst_efficiency \
 		--metrics gst_throughput \
 		--metrics gld_throughput \
-		./nbody ${N_BIG} ${DT} 1  0  $(INPUT_BIG) $(OUTPUT)
+		./nbody 20480 ${DT} 1  0  ../inputs/20480.h5 $(OUTPUT)

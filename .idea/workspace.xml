@@ -9,7 +9,18 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e5a87c0c-28f2-4839-8745-208f5f2bdab3" name="Default Changelist" comment="" />
+    <list default="true" id="e5a87c0c-28f2-4839-8745-208f5f2bdab3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/NewSession1.nvvp" beforeDir="false" afterPath="$PROJECT_DIR$/NewSession1.nvvp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nbody.txt" beforeDir="false" afterPath="$PROJECT_DIR$/nbody.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_time.sh" beforeDir="false" afterPath="$PROJECT_DIR$/run_time.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/step1/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/step1/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/step3/nbody.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/step3/nbody.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/step4/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/step4/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/step4/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/step4/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/step4/profile.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/step4/times.txt" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -52,6 +63,9 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
+  <component name="ServiceViewManager">
+    <option name="showServicesTree" value="false" />
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -78,14 +92,30 @@
       <screen x="0" y="27" width="1920" height="987" />
     </state>
     <state x="663" y="324" width="583" height="399" key="#com.intellij.fileTypes.FileTypeChooser/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608571566548" />
-    <state x="742" y="277" width="426" height="493" key="FileChooserDialogImpl" timestamp="1608446060580">
+    <state x="742" y="277" width="426" height="493" key="FileChooserDialogImpl" timestamp="1608621844883">
       <screen x="0" y="27" width="1920" height="987" />
     </state>
-    <state x="742" y="277" width="426" height="493" key="FileChooserDialogImpl/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608446060580" />
+    <state x="742" y="277" width="426" height="493" key="FileChooserDialogImpl/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608621844883" />
     <state x="614" y="347" key="com.intellij.ide.util.TipDialog" timestamp="1608370031500">
       <screen x="0" y="27" width="1920" height="987" />
     </state>
     <state x="614" y="347" key="com.intellij.ide.util.TipDialog/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608370031500" />
+    <state x="587" y="125" width="780" height="781" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1608649828376">
+      <screen x="0" y="27" width="1920" height="987" />
+    </state>
+    <state x="587" y="125" width="780" height="781" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608649828376" />
+    <state x="173" y="207" width="1366" height="597" maximized="true" key="dock-window-1" timestamp="1608639355106">
+      <screen x="0" y="27" width="1920" height="987" />
+    </state>
+    <state x="173" y="207" width="1366" height="597" maximized="true" key="dock-window-1/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608639355106" />
+    <state x="1920" y="159" width="1366" height="605" key="dock-window-2" timestamp="1608642204940">
+      <screen x="1920" y="159" width="1366" height="768" />
+    </state>
+    <state x="1920" y="159" width="1366" height="605" key="dock-window-2/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608642204940" />
+    <state x="1920" y="276" width="1366" height="605" maximized="true" key="dock-window-3" timestamp="1608650323227">
+      <screen x="1920" y="159" width="1366" height="768" />
+    </state>
+    <state x="1920" y="276" width="1366" height="605" maximized="true" key="dock-window-3/0.27.1920.987/1920.159.1366.768@0.27.1920.987" timestamp="1608650323227" />
     <state x="623" y="242" width="672" height="678" key="search.everywhere.popup" timestamp="1608472466170">
       <screen x="0" y="27" width="1920" height="987" />
     </state>

@@ -30,7 +30,7 @@ if [ "$(ls -A $INPUT_DIR)" ]; then
   rm -- "${INPUT_DIR}"/*
 fi
 # Check whether OUTPUT directory is empty
-if [ "$(ls -A $OUPUT_DIR)""step0/times.txt" ]; then
+if [ "$(ls -A $OUPUT_DIR)" ]; then
   rm -- "${OUTPUT_DIR}"/*
 fi
 

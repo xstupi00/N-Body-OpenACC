@@ -107,13 +107,6 @@ int main(int argc, char **argv) {
   // 4. Run the loop - calculate new Particle positions.
   for (int s = 0; s < steps; s++) {
 
-    /// Compute gravitation and collision velocity, and subsequently update particle positions
-    calculate_velocity(
-      (s & 1ul) ? particles_out : particles_in,
-      (s & 1ul) ? particles_in : particles_out,
-      N, dt
-    );
-
     /// Computes Center of Mass from the particles data computed in the previous iteration.
     centerOfMassGPU((s & 1) ? particles_out : particles_in, comOnGPU, N);
 
@@ -147,16 +140,25 @@ int main(int argc, char **argv) {
       h5Helper.writeParticleData(s / writeFreq);
 
       /// Wait for the COM data update from GPU to CPU
-      #pragma acc wait(SERIAL_COM_STREAM)
+      #pragma acc wait(UPDATE_COM_STREAM)
       /// Writing computed values Center of Mass to the file
       h5Helper.writeCom(comOnGPU[0].x, comOnGPU[0].y, comOnGPU[0].z, comOnGPU[0].w, s / writeFreq);
     }
+
+    /// Compute gravitation and collision velocity, and subsequently update particle positions
+    calculate_velocity(
+      (s & 1ul) ? particles_out : particles_in,
+      (s & 1ul) ? particles_in : particles_out,
+      N, dt
+    );
 
     /// Synchronization of the both compute streams across the iterations of the loop.
     /// Both compute streams have to wait for each other finish the current iteration.
     #pragma acc wait(COMPUTE_VELOCITIES_STREAM) async(COMPUTE_COM_STREAM)
     #pragma acc wait(COMPUTE_COM_STREAM) async(COMPUTE_VELOCITIES_STREAM)
   }// for s ...
+  // Wait for finish of all computations within async streams
+  #pragma acc wait
 
   // 5. In steps 3 and 4 -  Compute center of gravity
   centerOfMassGPU((steps & 1) ? particles_out : particles_in, comOnGPU, N);
@@ -168,7 +170,7 @@ int main(int argc, char **argv) {
 
   // 5. Copy data from GPU back to CPU.
   (steps & 1) ? particles_out.copyToCPU() : particles_in.copyToCPU(); // Copy particles data from GPU to CPU.
-  #pragma acc update host(comOnGPU[0]) wait(COMPUTE_COM_STREAM)       // Copy COM data from GPU to CPU.
+  #pragma acc update host(comOnGPU[0]) wait(SERIAL_COM_STREAM)        // Copy COM data from GPU to CPU.
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -190,7 +192,7 @@ int main(int argc, char **argv) {
             << std::endl;
 
   // Store final positions of the particles into a file
-  h5Helper.writeComFinal(comOnGPU[0].w, comOnGPU[0].y, comOnGPU[0].z, comOnGPU[0].w);
+  h5Helper.writeComFinal(comOnGPU[0].x, comOnGPU[0].y, comOnGPU[0].z, comOnGPU[0].w);
   h5Helper.writeParticleDataFinal();
 
   // Deallocate the Center of Mass data structure on the GPU.

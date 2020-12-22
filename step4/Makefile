@@ -57,6 +57,22 @@ run:
 run_big:
 	./nbody ${N_BIG} ${DT} ${STEPS} ${WRITE_INTESITY} $(INPUT_BIG) $(OUTPUT)
 
+profile_mem:
+	nvprof \
+		--devices 0 \
+		--metrics gld_requested_throughput  \
+		--metrics gst_requested_throughput \
+		--metrics gst_throughput \
+		--metrics gld_throughput \
+		./nbody ${N} ${DT} 1  0 ${INPUT} $(OUTPUT)
+
+profile_flops:
+	nvprof \
+		--devices 0 \
+		--metrics flops_sp \
+		--metrics flops_sp_special \
+		./nbody ${N} ${DT} 1  0 ${INPUT} $(OUTPUT)
+
 profile:
 	nvprof \
 		--devices 0 \
@@ -81,4 +97,4 @@ profile:
 		--metrics gst_efficiency \
 		--metrics gst_throughput \
 		--metrics gld_throughput \
-		./nbody ${N_BIG} ${DT} 1  0  ${INPUT_BIG} $(OUTPUT)
+		./nbody ${N_BIG} ${DT} 1  0  $(INPUT_BIG) $(OUTPUT)
