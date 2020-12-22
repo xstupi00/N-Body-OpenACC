@@ -18,6 +18,7 @@
 
 N=4096
 N_BIG=30720
+N1=65536
 DT=0.01f
 STEPS=500
 WRITE_INTESITY=20
@@ -26,6 +27,7 @@ INPUT=../sampledata/sampleInput.h5
 OUTPUT=step4Output.h5
 
 INPUT_BIG=../sampledata/30720.h5
+INPUT1=../inputs/65536.h5
 
 INCLUDE=../commons
 LIBS=-lhdf5 -lm
@@ -79,4 +81,4 @@ profile:
 		--metrics gst_efficiency \
 		--metrics gst_throughput \
 		--metrics gld_throughput \
-		./nbody ${N_BIG} ${DT} 1  0  $(INPUT_BIG) $(OUTPUT)
+		./nbody ${N_BIG} ${DT} 1  0  ${INPUT_BIG} $(OUTPUT)

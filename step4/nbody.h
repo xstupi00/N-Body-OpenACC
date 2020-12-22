@@ -1,10 +1,10 @@
 /**
  * @file      nbody.h
  *
- * @author    Jiri Jaros \n
+ * @author    Simon Stupinsky; xstupi00 \n
  *            Faculty of Information Technology \n
  *            Brno University of Technology \n
- *            jarosjir@fit.vutbr.cz
+ *            xstupi00@fit.vutbr.cz
  *
  * @brief     PCG Assignment 2
  *            N-Body simulation in ACC
@@ -12,7 +12,7 @@
  * @version   2021
  *
  * @date      11 November  2020, 11:22 (created) \n
- * @date      11 November  2020, 11:37 (revised) \n
+ * @date      21 December  2020, 21:11 (revised) \n
  *
  */
 
@@ -34,14 +34,13 @@ const int COMPUTE_VELOCITIES_STREAM = 1;
 const int UPDATE_PARTICLES_STREAM = 2;
 const int COMPUTE_COM_STREAM = 3;
 const int UPDATE_COM_STREAM = 4;
-const int COMPUTE_COM_STREAM_ = 5;
+const int SERIAL_COM_STREAM = 5;
 
 /**
  * @struct float4
  * Structure that mimics CUDA float4
  */
-struct float4
-{
+struct float4 {
   float x;
   float y;
   float z;
@@ -59,8 +58,7 @@ struct float4
 /**
  * Structure with particle data
  */
-struct Particles
-{
+struct Particles {
   /// Fill the structure holding the particle/s data
   /// It is recommended to implement constructor / destructor and copyToGPU and copyToCPU routines
   size_t n;       // Number of particles.
@@ -74,18 +72,19 @@ struct Particles
 
   /// Default constructor is not allowed - the particles number must be known in advance
   Particles() = delete;
+
   /// Copy constructor is not allowed - performance loss due to data copies.
-  Particles(const Particles& stc) = delete;
+  Particles(const Particles &stc) = delete;
+
   /// Assignment operator is not allowed - performance loss due to data copies.
-  Particles& operator=(const Particles& stc) = delete;
+  Particles &operator=(const Particles &stc) = delete;
 
   /**
   * Constructor.
   * This routine construct the particles on both, the CPU and GPU.
   * @param [in] n - Number of particles.
   */
-  Particles(size_t n) : n(n)
-  {
+  Particles(size_t n) : n(n) {
     /// Construct the particles on the CPU.
     pos_x = new float[n];   // Allocates positions X.
     pos_y = new float[n];   // Allocates positions Y.
@@ -113,8 +112,7 @@ struct Particles
   * Destructor.
   * This routine destruct the particles on both, the CPU and GPU.
   */
-  ~Particles()
-  {
+  ~Particles() {
     /// First deal with the deallocate of the dynamic members.
     #pragma acc exit data delete(pos_x[n])   // Deallocate positions X.
     #pragma acc exit data delete(pos_y[n])   // Deallocate positions Y.
@@ -127,19 +125,18 @@ struct Particles
     #pragma acc exit data delete(this)
 
     /// Destruct the particles on the CPU.
-    delete [] pos_x;   // Deallocate positions X.
-    delete [] pos_y;   // Deallocate positions Y.
-    delete [] pos_z;   // Deallocate positions Z.
-    delete [] vel_x;   // Deallocate velocities X.
-    delete [] vel_y;   // Deallocate velocities Y.
-    delete [] vel_z;   // Deallocate velocities Z.
-    delete [] weights; // Deallocate weights.
+    delete[] pos_x;   // Deallocate positions X.
+    delete[] pos_y;   // Deallocate positions Y.
+    delete[] pos_z;   // Deallocate positions Z.
+    delete[] vel_x;   // Deallocate velocities X.
+    delete[] vel_y;   // Deallocate velocities Y.
+    delete[] vel_z;   // Deallocate velocities Z.
+    delete[] weights; // Deallocate weights.
   } /// Destructor
   ///------------------------------------------------------------------------------------------------------------------
 
   /// Copy actual CPU particles data to GPU.
-  void copyToGPU()
-  {
+  void copyToGPU() {
     #pragma acc update device(pos_x[n])   // Copy positions X: CPU => GPU.
     #pragma acc update device(pos_y[n])   // Copy positions Y: CPU => GPU.
     #pragma acc update device(pos_z[n])   // Copy positions Z: CPU => GPU.
@@ -151,8 +148,7 @@ struct Particles
   ///------------------------------------------------------------------------------------------------------------------
 
   /// Copy actual particles data from GPU to CPU.
-  void copyToCPU()
-  {
+  void copyToCPU() {
     #pragma acc update host(pos_x[n])    // Copy positions X: GPU => CPU.
     #pragma acc update host(pos_y[n])    // Copy positions Y: GPU => CPU.
     #pragma acc update host(pos_z[n])    // Copy positions Z: GPU => CPU.
@@ -164,16 +160,15 @@ struct Particles
   ///------------------------------------------------------------------------------------------------------------------
 
   /// Copy actual particles data from GPU to CPU.
-  void copyToCPUAsync()
-  {
+  void copyToCPUAsync() {
     /// Wait for the particle computation from the previous iteration to finish
-    #pragma acc update host(pos_x[n]) wait(COMPUTE_VELOCITIES_STREAM) async(UPDATE_PARTICLES_STREAM)    // Copy positions X: GPU => CPU.
-    #pragma acc update host(pos_y[n]) wait(COMPUTE_VELOCITIES_STREAM) async(UPDATE_PARTICLES_STREAM)    // Copy positions Y: GPU => CPU.
-    #pragma acc update host(pos_z[n]) wait(COMPUTE_VELOCITIES_STREAM) async(UPDATE_PARTICLES_STREAM)    // Copy positions Z: GPU => CPU.
-    #pragma acc update host(vel_x[n]) wait(COMPUTE_VELOCITIES_STREAM) async(UPDATE_PARTICLES_STREAM)    // Copy velocities X: GPU => CPU.
-    #pragma acc update host(vel_y[n]) wait(COMPUTE_VELOCITIES_STREAM) async(UPDATE_PARTICLES_STREAM)    // Copy velocities Y: GPU => CPU.
-    #pragma acc update host(vel_z[n]) wait(COMPUTE_VELOCITIES_STREAM) async(UPDATE_PARTICLES_STREAM)    // Copy velocities Z: GPU => CPU.
-    #pragma acc update host(weights[n]) wait(COMPUTE_VELOCITIES_STREAM) async(UPDATE_PARTICLES_STREAM)  // Copy weights: GPU => CPU.
+    #pragma acc update host(pos_x[n]) async(UPDATE_PARTICLES_STREAM) wait(COMPUTE_VELOCITIES_STREAM)   // Copy positions X: GPU => CPU.
+    #pragma acc update host(pos_y[n]) async(UPDATE_PARTICLES_STREAM) wait(COMPUTE_VELOCITIES_STREAM)   // Copy positions Y: GPU => CPU.
+    #pragma acc update host(pos_z[n]) async(UPDATE_PARTICLES_STREAM) wait(COMPUTE_VELOCITIES_STREAM)   // Copy positions Z: GPU => CPU.
+    #pragma acc update host(vel_x[n]) async(UPDATE_PARTICLES_STREAM) wait(COMPUTE_VELOCITIES_STREAM)   // Copy velocities X: GPU => CPU.
+    #pragma acc update host(vel_y[n]) async(UPDATE_PARTICLES_STREAM) wait(COMPUTE_VELOCITIES_STREAM)   // Copy velocities Y: GPU => CPU.
+    #pragma acc update host(vel_z[n]) async(UPDATE_PARTICLES_STREAM) wait(COMPUTE_VELOCITIES_STREAM)   // Copy velocities Z: GPU => CPU.
+    #pragma acc update host(weights[n]) async(UPDATE_PARTICLES_STREAM) wait(COMPUTE_VELOCITIES_STREAM) // Copy weights: GPU => CPU.
   }/// copyToCPU
   ///------------------------------------------------------------------------------------------------------------------
 
@@ -188,7 +183,7 @@ struct Particles
  * @param [in]  dt       - Time step size
  */
 void calculate_velocity(
-  const Particles& p_in, Particles& p_out, const int N, const float dt
+  const Particles &p_in, Particles &p_out, const int N, const float dt
 );
 
 
@@ -198,7 +193,7 @@ void calculate_velocity(
  * @param [in] N - Number of particles
  * @return Center of Mass [x, y, z] and total weight[w]
  */
-void centerOfMassGPU(const Particles& p, float4* __restrict com, const int N);
+void centerOfMassGPU(const Particles &p, float4 *__restrict com, const int N);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -207,6 +202,6 @@ void centerOfMassGPU(const Particles& p, float4* __restrict com, const int N);
  * @param memDesc
  * @return centre of gravity
  */
-float4 centerOfMassCPU(MemDesc& memDesc);
+float4 centerOfMassCPU(MemDesc &memDesc);
 
 #endif /* __NBODY_H__ */

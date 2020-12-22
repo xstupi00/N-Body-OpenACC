@@ -1,10 +1,10 @@
 /**
  * @file      nbody.cpp
  *
- * @author    Jiri Jaros \n
+ * @author    Simon Stupinsky; xstupi00 \n
  *            Faculty of Information Technology \n
  *            Brno University of Technology \n
- *            jarosjir@fit.vutbr.cz
+ *            xstupi00@fit.vutbr.cz
  *
  * @brief     PCG Assignment 2
  *            N-Body simulation in ACC
@@ -12,7 +12,7 @@
  * @version   2021
  *
  * @date      11 November  2020, 11:22 (created) \n
- * @date      11 November  2020, 11:37 (revised) \n
+ * @date      21 December  2020, 18:04 (revised) \n
  *
  */
 
@@ -26,22 +26,18 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// Compute gravitation and collision velocity, and subsequently update particle positions
-void calculate_velocity(
-  const Particles& p_in, Particles& p_out, const int N, const float dt
-) {
+void calculate_velocity(const Particles &p_in, Particles &p_out, const int N, const float dt) {
 
-#pragma acc parallel loop present(p_in, p_out) gang
-  for (unsigned int i = 0; i < N; i++)
-  {
+  /// Initialise of auxiliary accumulators of velocity
+  float tmp_vel_x = 0.0f;
+  float tmp_vel_y = 0.0f;
+  float tmp_vel_z = 0.0f;
 
-    /// Initialise of auxiliary accumulators of velocity
-    float tmp_vel_x = 0.0f;
-    float tmp_vel_y = 0.0f;
-    float tmp_vel_z = 0.0f;
-
-#pragma acc loop reduction(+:tmp_vel_x, tmp_vel_y, tmp_vel_z) worker vector
+  #pragma acc parallel loop present(p_in, p_out) gang worker vector
+  for (unsigned int i = 0; i < N; i++) {
+    #pragma acc loop seq
     /// The iterations over all particles to compute the gravitation velocity to them
-    for (unsigned int j = 0; j < N; j++) {
+    for (int j = 0; j < N; j++) {
 
       /// Instruction Level Parallelism
       float s = -G * dt * p_in.weights[j];
@@ -86,15 +82,19 @@ void calculate_velocity(
     p_out.pos_x[i] = p_in.pos_x[i] + (p_in.vel_x[i] + tmp_vel_x) * dt;
     p_out.pos_y[i] = p_in.pos_y[i] + (p_in.vel_y[i] + tmp_vel_y) * dt;
     p_out.pos_z[i] = p_in.pos_z[i] + (p_in.vel_z[i] + tmp_vel_z) * dt;
+
+    /// Set the null before the next computation iteration  of the velocity accumulation
+    tmp_vel_x = 0.0f;
+    tmp_vel_y = 0.0f;
+    tmp_vel_z = 0.0f;
   }
 
 }
 
 
 /// Compute center of gravity
-float4 centerOfMassGPU(const Particles& p,
-                       const int        N)
-{
+float4 centerOfMassGPU(const Particles &p,
+                       const int N) {
 
   return {0.0f, 0.0f, 0.0f, 0.0f};
 }/// end of centerOfMassGPU
@@ -103,12 +103,10 @@ float4 centerOfMassGPU(const Particles& p,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// Compute center of mass on CPU
-float4 centerOfMassCPU(MemDesc& memDesc)
-{
-  float4 com = {0 ,0, 0, 0};
+float4 centerOfMassCPU(MemDesc &memDesc) {
+  float4 com = {0, 0, 0, 0};
 
-  for(int i = 0; i < memDesc.getDataSize(); i++)
-  {
+  for (int i = 0; i < memDesc.getDataSize(); i++) {
     // Calculate the vector on the line connecting points and most recent position of center-of-mass
     const float dx = memDesc.getPosX(i) - com.x;
     const float dy = memDesc.getPosY(i) - com.y;
@@ -116,7 +114,7 @@ float4 centerOfMassCPU(MemDesc& memDesc)
 
     // Calculate weight ratio only if at least one particle isn't massless
     const float dw = ((memDesc.getWeight(i) + com.w) > 0.0f)
-                          ? ( memDesc.getWeight(i) / (memDesc.getWeight(i) + com.w)) : 0.0f;
+                     ? (memDesc.getWeight(i) / (memDesc.getWeight(i) + com.w)) : 0.0f;
 
     // Update position and weight of the center-of-mass according to the weight ration and vector
     com.x += dx * dw;
